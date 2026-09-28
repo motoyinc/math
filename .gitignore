@@ -1,0 +1,35 @@
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python bytecode and tool caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# IDE and operating system files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local environment configuration
+.env
+.env.*
+!.env.example
+
+# Generated FFT output
+/FFT/signal.png
+/FFT/fft_magnitude.png
+/FFT/fft_output/
