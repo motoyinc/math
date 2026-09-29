@@ -151,15 +151,6 @@ def main():
             + np.sin(2 * np.pi * 300 * x)
     )
 
-    # 绘制原始信号
-    fig, ax = plt.subplots(figsize=(10, 4))
-    ax.plot(x, samples)
-    ax.set(xlabel="x", ylabel="f(x)", title="Original Signal")
-    ax.grid(alpha=0.3)
-    fig.tight_layout()
-    fig.savefig(Path(__file__).resolve().parent / "signal.png", dpi=150)
-    plt.show()
-
     # 计算FFT
     result = FFT.fft(samples)
 
