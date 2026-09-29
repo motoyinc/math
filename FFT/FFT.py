@@ -136,9 +136,6 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 
-
-
-
 def main():
     # 创建离散定义域列表，即采样点列表
     # 在 [0, 1) 范围内，等间隔取 1024 个点
@@ -166,23 +163,22 @@ def main():
     # 计算FFT
     result = FFT.fft(samples)
 
-    # 绘制FFT结果
-    values = np.asarray(result, dtype=complex).reshape(-1)
-    if values.size == 0:
-        raise ValueError("FFT 结果不能为空")
-    k = np.arange(values.size)
+    # FFT结果并取复数模长。并转换为numpy数组
+    magnitude = np.abs(np.asarray(result, dtype=complex))
+    k = np.arange(magnitude.size)
+
+    # 显示图像。
+    fig, axes = plt.subplots(2, 1, figsize=(10, 8), constrained_layout=True)
+    axes[0].plot(x, samples)
+    axes[0].set(xlabel="x", ylabel="f(x)", title="Original Signal")
+    axes[0].grid(alpha=0.3)
+    axes[1].plot(k, magnitude)
+    axes[1].set(xlabel="Frequency bin k", ylabel="|X[k]|", title="FFT: Magnitude")
+    axes[1].grid(alpha=0.3)
+
     output_dir = Path(__file__).resolve().parent
-    magnitude = np.abs(values)
-    # 频点索引与复数模长。
-    fig, ax = plt.subplots(figsize=(10, 4))
-    ax.plot(k, magnitude)
-    ax.set(xlabel="Frequency bin k",ylabel="|X[k]|",title="FFT: Magnitude",)
-    ax.grid(alpha=0.3)
-    fig.tight_layout()
-    fig.savefig(output_dir / "fft_magnitude.png", dpi=150)
-
-
-
+    fig.savefig(output_dir / "fft_comparison.png", dpi=150)
+    plt.show()
 
 
 if __name__ == "__main__":
