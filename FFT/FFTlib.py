@@ -98,6 +98,29 @@ class FFT:
         # 排列完成后，进行逐层 DFT 合并。
         return FFT.__dft_merge(sample)
 
+    @staticmethod
+    def ifft(X: Iterable[complex]) -> list[complex]:
+        """通过共轭复用正向 FFT，还原时域采样值。
+
+        IFFT(X) = conjugate(FFT(conjugate(X))) / N。
+        输入可以是实数或复数的可迭代对象，返回等长的复数列表。
+        长度检查由 FFT.fft 完成：空输入或非 2 的幂长度会抛出 ValueError。
+        计算不修改输入，也不丢弃结果的虚部。
+        """
+        values = [complex(value) for value in X]
+        n = len(values)
+
+        # 第一步：输入取共轭。
+        conjugated = [value.conjugate() for value in values]
+
+        # 第二步：调用已有的 FFT。
+        transformed = FFT.fft(conjugated)
+
+        # 第三步：输出取共轭，再除以总长度。
+        return [
+            value.conjugate() / n
+            for value in transformed
+        ]
 
     @staticmethod
     def fft2(image: ArrayLike) -> NDArray[np.complex128]:
@@ -156,18 +179,26 @@ def main():
     # 计算FFT
     result = FFT.fft(samples)
 
+    # 计算IFFT
+    result_ifft = FFT.ifft(result)
+    # 原信号是实数，因此绘制重建结果的实部，保留波形的正负值。
+    reconstructed = np.real(np.asarray(result_ifft, dtype=complex))
+
     # FFT结果并取复数模长。并转换为numpy数组
     magnitude = np.abs(np.asarray(result, dtype=complex))
     k = np.arange(magnitude.size)
 
     # 显示图像。
-    fig, axes = plt.subplots(2, 1, figsize=(10, 8), constrained_layout=True)
+    fig, axes = plt.subplots(3, 1, figsize=(10, 8), constrained_layout=True)
     axes[0].plot(x, samples)
     axes[0].set(xlabel="x", ylabel="f(x)", title="Original Signal")
     axes[0].grid(alpha=0.3)
     axes[1].plot(k, magnitude)
     axes[1].set(xlabel="Frequency bin k", ylabel="|X[k]|", title="FFT: Magnitude")
     axes[1].grid(alpha=0.3)
+    axes[2].plot(x, reconstructed)
+    axes[2].set(xlabel="x", ylabel="x[n]", title="IFFT: Reconstructed Signal")
+    axes[2].grid(alpha=0.3)
 
     output_dir = Path(__file__).resolve().parent
     fig.savefig(output_dir / "fft_comparison.png", dpi=150)
