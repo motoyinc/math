@@ -25,7 +25,7 @@ class FFT:
         return reversed_index
 
     @staticmethod
-    def __dft_merge(spectrum: list[complex]) -> list[complex]:
+    def __dft_merge(spectrum: list[complex], inverse=False) -> list[complex]:
         """原地合并位反转排列后的数据，并返回同一个列表。
 
         调用前须保证长度为 2 的整数次幂，且已完成位反转排列。
@@ -34,12 +34,14 @@ class FFT:
         sample_count = len(spectrum)
         size = 2
 
+        sign = 1 if inverse else -1
+
         while size <= sample_count:
             half_size = size // 2
 
             # 当前层的旋转因子，同一层的所有分组共用。
             twiddle_factors = [
-                np.exp(-2j * np.pi * k / size)
+                np.exp(sign * 2j * np.pi * k / size)
                 for k in range(half_size)
             ]
 
